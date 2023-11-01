@@ -79,35 +79,47 @@ public class Terminal {
         }
     }
 
-   public void cpR(String sourceDir, String destinationDir) {
-       if (sourceDir != null && destinationDir != null) {
-           try {
-               Path src = Paths.get(sourceDir);
-               Path dest = Paths.get(destinationDir);
+      public void cpR(String sourceDir, String destinationDir) {
+        if (Objects.isNull(sourceDir) || Objects.isNull(destinationDir)) {
+            System.out.println("Source or destination path is null.");
+            return;
+        }
 
-               Files.walk(src)
-                       .forEach(source -> {
-                           try {
-                               Path newDestination = dest.resolve(src.relativize(source));
-                               if (!Files.exists(newDestination.getParent())) {
-                                   Files.createDirectories(newDestination.getParent());
-                               }
-                               Files.copy(source, newDestination, StandardCopyOption.REPLACE_EXISTING);
-                           } catch (IOException e) {
-                               e.printStackTrace();
-                               System.out.println("An error occurred while copying the directory.");
-                           }
-                       });
-               System.out.println("Directory copied successfully.");
-           } catch (IOException e) {
-               e.printStackTrace();
-               System.out.println("An error occurred while copying the directory.");
-           }
-       } else {
-           System.out.println("Source or destination path is null.");
-       }
-   }
+        try {
+            Path src = Paths.get(sourceDir);
+            Path dest = Paths.get(destinationDir);
 
+            Files.walk(src)
+                    .forEach(source -> {
+                        try {
+                            if (source != null) {
+                                Path newDestination = dest.resolve(src.relativize(source));
+
+                                if (newDestination != null) {
+                                    if (Files.exists(newDestination)) {
+                                        System.out.println("Destination already exists: " + newDestination);
+                                    } else {
+                                        Files.createDirectories(newDestination.getParent());
+                                        Files.copy(source, newDestination, StandardCopyOption.REPLACE_EXISTING);
+                                    }
+                                } else {
+                                    System.out.println("New destination path is null.");
+                                }
+                            } else {
+                                System.out.println("Source path is null.");
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            System.out.println("An error occurred while copying the directory.");
+                        }
+                    });
+
+            System.out.println("Directory copied successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("An error occurred while copying the directory.");
+        }
+    }
 
 
 
