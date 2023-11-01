@@ -1,22 +1,28 @@
 import java.util.*;
 public class Parser {
     private String commandName;
-    private final String[] args = new String[10];
-    public boolean parse(String input){
-        if (!input.isEmpty()){
-            int i = 0;
+    private String[] args = new String[10];
+    public boolean parse(String input) {
+        if (!input.isEmpty()) {
+            List<String> tokens = new ArrayList<>();
             Scanner scanner = new Scanner(input);
-            commandName = scanner.next();
-            while (scanner.hasNext()){
-                args[i] =(scanner.next());
-                i++;
+            scanner.useDelimiter("\"[^\"]*\"|\\s+");
+            while (scanner.hasNext()) {
+                String token = scanner.next().replaceAll("\"", "");
+                if (!token.isEmpty()) {
+                    tokens.add(token);
+                }
             }
-            return true;
-        }else{
-            return false;
-        }
 
-    }
+            if (!tokens.isEmpty()) {
+                commandName = tokens.get(0);
+                tokens.remove(0);
+                args = tokens.toArray(new String[0]);
+                return true;
+            }
+        }
+        return false;
+}
     public String getCommandName(){
         return commandName;
     }
